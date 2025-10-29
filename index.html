@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-2 max-w-full h-full border-gray-400 border-2">
+    <div class="button-container border-green-400 border-2 flex justify-between items-center ">
+        <button class="start-btn bg-blue-500 text-white p-2 rounded">Start Tracking</button>
+        <button class="stop-btn bg-red-500 text-white p-2 rounded">Stop Tracking</button>
+    </div>
+    <div class="distance-display mt-4 flex justify-between items-center border-yellow-400 border-2 p-4">
+        <h2 class="text-xl font-bold">Distance Covered:</h2>
+        <p class="text-3xl">0 meters</p>
+    </div>
+    <div class="flex border-2 mt-2 border-yellow-400">
+        <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2">
+            <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
+                <h1>Start To End</h1>
+                <p>0 meters</p>
+            </div>
+
+            <div class="distance-location flex justify-between items-center border-purple-500 border-2 p-2">
+                <h1>Alimosho</h1>
+                <span> --> </span>
+                <p>Ikeja</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
