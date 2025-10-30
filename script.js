@@ -48,6 +48,14 @@ const startTracking = () => {
     );
 }
 
+const stopTracking = () => {
+    if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        console.log("tracking stopped")
+    }
+};
+
 // console.log(watchId)
 
 document.querySelector('.start-btn').addEventListener('click', startTracking);
+document.querySelector('.stop-btn').addEventListener('click', stopTracking);
