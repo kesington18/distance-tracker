@@ -1,48 +1,57 @@
 const API_KEY = "3da5b07faee1bcb1ec9587454037859f";
 
-let watchId;
+let watchId = null;
+let startPosition = null;
+let lastPosition = null;
+let totalDistance = 0;
+let route = [];
+
+const display = document.getElementById("location-display");
+
+async function processData(lat, lon) {
+    try {
+        const REVERSE_GEOCODING_API = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`;
+        const response = await fetch(REVERSE_GEOCODING_API);
+        const data = await response.json();
+
+        const { name, country } = data[0];
+        console.log(name, country);
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// the main function to start tracking
 
 const startTracking = () => {
-    // if (navigator.geolocation) {
-    //     navigator.geolocation.watchPosition((position) => {
-    //         const { latitude, longitude } = position.coords;
-    //         console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-    //     });
-    // } else {
-    //     console.error("Geolocation is not supported by this browser.");
-    // }
-
-    // console.log(navigator.geolocation)
+    if(!navigator.geolocation){
+        alert("Geolocation is not supported by your browser");
+        return;
+    }
 
     watchId = navigator.geolocation.watchPosition(
-        (position) => {
-            // console.log(position)
+        async (position) => {
+            console.log(position)
             const { latitude, longitude } = position.coords;
-            // console.log(latitude, longitude)
+            const timeStamp = position.timestamp;
+            // console.log(latitude, longitude, timeStamp)
+            const currentPosition = { latitude, longitude, timeStamp};
 
-            const REVERSE_GEOCODING_API = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`
+            if (!startPosition){
+                startPosition = currentPosition;
+                lastPosition = currentPosition;
+                route.push(currentPosition);
 
-            async function processData(url) {
-                try {
-                    const response = await fetch(url);
-                    const data = await response.json();
-
-                    // console.log(data)
-                    const { name, country } = data[0];
-                    console.log(name, country)
-                } catch (error) {
-                    alert(error.message);
-                }
+                const startName = await processData(latitude, longitude);
+                
             }
-
-            processData(REVERSE_GEOCODING_API);
         },
         (error) => {
             console.log(error)
         },
         {
             enableHighAccuracy: true,
-            timeout: 10000,
+            timeout: 20000,
             maximumAge: 0
         }
     );
