@@ -10,12 +10,14 @@ const display = document.getElementById("location-display");
 
 async function processData(lat, lon) {
     try {
-        const REVERSE_GEOCODING_API = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`;
+        const REVERSE_GEOCODING_API = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`;
         const response = await fetch(REVERSE_GEOCODING_API);
         const data = await response.json();
 
-        const { name, country } = data[0];
-        console.log(name, country);
+        return data;
+
+        // const { name, country } = data[0];
+        // console.log(name, country);
     } catch (error) {
         alert(error.message);
     }
@@ -31,7 +33,7 @@ const startTracking = () => {
 
     watchId = navigator.geolocation.watchPosition(
         async (position) => {
-            console.log(position)
+            // console.log(position)
             const { latitude, longitude } = position.coords;
             const timeStamp = position.timestamp;
             // console.log(latitude, longitude, timeStamp)
@@ -43,20 +45,76 @@ const startTracking = () => {
                 route.push(currentPosition);
 
                 const startName = await processData(latitude, longitude);
-                
+
+                const { name, country } = startName[0];
+
+                display.innerHTML = `<div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2 w-full mb-2">
+                <h1>Start:</h1>
+                <p> ${name}, ${country}</p>
+            </div>`;
+                return;
+            };
+
+            // calculate distance from last position to current position
+            const segmentDistance= getDistanceInMeters(
+                lastPosition.latitude,
+                lastPosition.longitude,
+                currentPosition.latitude,
+                currentPosition.longitude
+            );
+
+            if(segmentDistance > 10){
+                totalDistance += segmentDistance;
+                route.push(currentPosition); // add current position to route
             }
+            console.log(segmentDistance)
+
+            lastPosition = currentPosition;
+
+            const endPositionName = await processData(latitude, longitude);
+
+            const { name, country } = endPositionName[0];
+
+            display.innerHTML = `<div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2 w-full mb-2">
+                <h1>Start:</h1>
+                <p> ${startPosition.latitude.toFixed(4)}, ${startPosition.longitude.toFixed(4)}</p>
+            </div>
+            <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2 w-full mb-2">
+                <h1>End:</h1>
+                <p> ${name}, ${country}</p>
+            </div>`;
+
+            document.querySelector('.total-distance').textContent = `${totalDistance.toFixed(2)} meters`;
         },
         (error) => {
             console.log(error)
         },
         {
             enableHighAccuracy: true,
-            timeout: 20000,
+            timeout: 30000,
             maximumAge: 0
         }
     );
 }
 
+// Calculates the distance between two coordinates using the Haversine formula
+function getDistanceInMeters(lat1, lon1, lat2, lon2) {
+  const toRad = deg => deg * Math.PI / 180;
+  const R = 6371000;
+  const φ1 = toRad(lat1);
+  const φ2 = toRad(lat2);
+  const Δφ = toRad(lat2 - lat1);
+  const Δλ = toRad(lon2 - lon1);
+
+  const a = Math.sin(Δφ / 2) ** 2 +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+
+// function to stop tracking
 const stopTracking = () => {
     if (watchId) {
         navigator.geolocation.clearWatch(watchId);
