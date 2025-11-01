@@ -123,6 +123,8 @@ const stopTracking = async () => {
             const endTimestamp = new Date(lastPosition.timestamp);
             const timeElapsed = endTimestamp - startTimestamp;
 
+            document.querySelector('.total-distance').textContent = `${totalDistance.toFixed(2)} meters`;
+
             display.innerHTML += `
                 <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2">
                     <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
