@@ -119,13 +119,20 @@ const stopTracking = async () => {
             const startName = await processData(startPosition.latitude, startPosition.longitude);
             const endPositionName = await processData(lastPosition.latitude, lastPosition.longitude);
 
-
+            const startTimestamp = new Date(startPosition.timestamp);
+            const endTimestamp = new Date(lastPosition.timestamp);
+            const timeElapsed = endTimestamp - startTimestamp;
 
             display.innerHTML += `
                 <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2">
                     <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
                         <h1>Start To End</h1>
                         <p>${finalDistance.toFixed(2)} meters</p>
+                    </div>
+
+                    <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
+                        <h1>Time elapsed</h1>
+                        <p>${timeElapsed} milliseconds</p>
                     </div>
 
                     <div class="distance-location flex justify-between items-center border-purple-500 border-2 p-2">
