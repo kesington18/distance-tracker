@@ -5,8 +5,18 @@ let startPosition = null;
 let lastPosition = null;
 let totalDistance = 0;
 let route = [];
+let startName = "";
 
 const display = document.getElementById("location-display");
+
+const showLoader = () => {
+  display.innerHTML = `
+    <div class="flex flex-col items-center justify-center w-full py-10">
+      <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+      <p class="text-gray-600 font-medium">Fetching your location...</p>
+    </div>
+  `;
+};
 
 
 // Calculates the distance between two coordinates using the Haversine formula
@@ -47,9 +57,13 @@ const startTracking = () => {
         alert("Geolocation is not supported by your browser");
         return;
     }
+    // 🌀 Show loader while waiting for first GPS fix
+    showLoader();
 
     watchId = navigator.geolocation.watchPosition(
         async (position) => {
+
+
             // console.log(position)
             const { latitude, longitude } = position.coords;
             const timestamp = position.timestamp;
@@ -61,9 +75,21 @@ const startTracking = () => {
                 lastPosition = currentPosition;
                 route.push(currentPosition);
 
-                const startName = await processData(startPosition.latitude, startPosition.longitude);
+                // Fade out placeholder (if visible)
+                const placeholder = document.getElementById("placeholder");
+                if (placeholder) {
+                placeholder.classList.add("opacity-0");
+                setTimeout(() => placeholder.remove(), 700); // remove after fade completes
+                }
+
+                startName = await processData(startPosition.latitude, startPosition.longitude);
     
-                display.innerHTML = `<h3 class="tracking-start border-green-500 border-2 w-full mb-2 p-2">📍Tracking started at ${startName[0].name}, ${startName[0].country}</h3>`;
+                display.innerHTML = `<h2 class="tracking-start border-green-500 border-2 w-full mb-2 p-2 opacity-0 transition-opacity duration-700 ease-in-out">📍Tracking started at ${startName[0].name}, ${startName[0].country}</h2>`;
+
+                // Smooth fade-in effect for the new content
+                setTimeout(() => {
+                    document.querySelector(".tracking-start").classList.replace("opacity-0", "opacity-100");
+                }, 100);
 
                 return;
             };
@@ -90,7 +116,10 @@ const startTracking = () => {
             document.querySelector('.total-distance').textContent = `${totalDistance.toFixed(2)} meters`;
         },
         (error) => {
-            console.log(error)
+            // console.log(error)
+            if (error.code === error.PERMISSION_DENIED) {
+                alert("Geolocation request failed. please reset location permission to grant access and reload")
+            }
         },
         {
             enableHighAccuracy: true,
@@ -99,8 +128,6 @@ const startTracking = () => {
         }
     );
 }
-
-
 
 // function to stop tracking
 const stopTracking = async () => {
@@ -116,45 +143,104 @@ const stopTracking = async () => {
         if (startPosition && lastPosition) {
             const finalDistance = getDistanceInMeters(startPosition.latitude, startPosition.longitude, lastPosition.latitude, lastPosition.longitude);
 
-            const startName = await processData(startPosition.latitude, startPosition.longitude);
             const endPositionName = await processData(lastPosition.latitude, lastPosition.longitude);
 
-            const startTimestamp = new Date(startPosition.timestamp);
-            const endTimestamp = new Date(lastPosition.timestamp);
+            const getFirstDate = new Date(startPosition.timestamp);
+            const getLastDate = new Date(lastPosition.timestamp);
 
-            const timeElapsed = endTimestamp - startTimestamp;
 
-            console.log(startTimestamp, endTimestamp, finalDistance, timeElapsed);
+
+            const totalTime = calculateTotalTime(startPosition, lastPosition);
+
+            console.log(totalTime, finalDistance, totalDistance);
 
             document.querySelector('.total-distance').textContent = `${totalDistance.toFixed(2)} meters`;
 
             display.innerHTML += `
-                <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2">
+                <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2  opacity-0 transition-opacity duration-700 ease-in-out summary-card">
                     <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
-                        <h1>Start To End</h1>
+                        <h2>Start To End</h2>
                         <p>${finalDistance.toFixed(2)} meters</p>
                     </div>
 
                     <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
-                        <h1>Time elapsed</h1>
-                        <p>${timeElapsed} milliseconds</p>
+                        <h2>Time elapsed</h2>
+                        <p class=" text-lg font-mono">${totalTime.formattedTime}</p>
                     </div>
 
                     <div class="distance-location flex justify-between items-center border-purple-500 border-2 p-2">
-                        <h1>${startName[0].name}</h1>
+                        <div>
+                            <h2>${startName[0].name}</h2>
+                            <br>
+                            <h2>${getFirstDate.toLocaleString()}</h2>
+                        </div>
+
                         <span> --> </span>
-                        <p>${endPositionName[0].name}</p>
+                        
+                        <div>
+                            <h2>${endPositionName[0].name}</h2>
+                            <br>
+                            <h2>${getLastDate.toLocaleString()}</h2>
+                        </div>
                     </div>
                 </div>
             `;
 
+            // Smooth fade-in effect for the new content
+            setTimeout(() => {
+                document.querySelector(".summary-card").classList.replace("opacity-0", "opacity-100");
+            }, 100);
+
+        } else {
+            display.innerHTML = `
+                <div
+                    id="placeholder"
+                    class="flex flex-col items-center justify-center text-center bg-gray-50 border border-yellow-300 rounded-xl shadow-md p-6 w-full sm:w-3/4 md:w-1/2 transition-opacity duration-700 ease-in-out"
+                >
+                    <div class="text-6xl mb-4 animate-pulse">🗺️</div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">No Active Tracking</h2>
+                    <p class="text-gray-600 text-sm md:text-base leading-relaxed">
+                    Press 
+                    <span class="text-blue-600 font-semibold">Start Tracking</span> 
+                    to begin recording your journey.
+                    </p>
+                </div>
+            `;
+            return;
         }
+
+        startPosition = null;
+        lastPosition = null;
+        totalDistance = 0;
+        route = [];
+        startName = "";
+
     } catch (error) {
         alert(error.message);
     }
 
 
 };
+
+const calculateTotalTime = (startTime, endTime) => {
+    const startTimestamp = new Date(startTime.timestamp);
+    const endTimestamp = new Date(endTime.timestamp);
+
+    const timeElapsed = endTimestamp.getTime() - startTimestamp.getTime();
+
+    const hours = Math.floor((timeElapsed / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((timeElapsed / (1000 * 60)) % 60);
+    const seconds = Math.floor((timeElapsed / 1000) % 60);
+
+    // console.log(startTimestamp, endTimestamp, timeElapsed);
+
+      // Format with leading zeros
+    const format = num => String(num).padStart(2, "0");
+
+    const formattedTime = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
+
+    return { hours, minutes, seconds, formattedTime };
+}
 
 // console.log(watchId)
 

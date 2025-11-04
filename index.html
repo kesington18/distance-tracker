@@ -12,23 +12,28 @@
         <button class="stop-btn bg-red-500 text-white p-2 rounded">Stop Tracking</button>
     </div>
     <div class="distance-display mt-4 flex justify-between items-center border-yellow-400 border-2 p-4">
-        <h2 class="text-xl font-bold">Distance Covered:</h2>
+        <h1 class="text-xl font-bold">Distance Covered:</h1>
         <p class="total-distance text-3xl">0 meters</p>
     </div>
-    <div class="flex border-2 mt-2 border-yellow-400" id="location-display">
-        <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2">
-            <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
-                <h1>Start To End</h1>
-                <p>0 meters</p>
-            </div>
-
-            <div class="distance-location flex justify-between items-center border-purple-500 border-2 p-2">
-                <h1>Alimosho</h1>
-                <span> --> </span>
-                <p>Ikeja</p>
-            </div>
+    <div
+        id="location-display"
+        class="flex justify-center items-center mt-4 w-full bg-gradient-to-br from-gray-50 to-yellow-50
+        border-blue-400 border-2"
+    >
+        <div
+            id="placeholder"
+            class="flex flex-col items-center justify-center text-center bg-gray-50 border border-yellow-300 rounded-xl shadow-md p-6 w-full sm:w-3/4 md:w-1/2 transition-opacity duration-700 ease-in-out"
+        >
+            <div class="text-6xl mb-4 animate-pulse">🗺️</div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">No Active Tracking</h2>
+            <p class="text-gray-600 text-sm md:text-base leading-relaxed">
+            Press 
+            <span class="text-blue-600 font-semibold">Start Tracking</span> 
+            to begin recording your journey.
+            </p>
         </div>
     </div>
+
 
     <script src="script.js"></script>
 </body>
