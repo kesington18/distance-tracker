@@ -121,7 +121,10 @@ const stopTracking = async () => {
 
             const startTimestamp = new Date(startPosition.timestamp);
             const endTimestamp = new Date(lastPosition.timestamp);
+
             const timeElapsed = endTimestamp - startTimestamp;
+
+            console.log(startTimestamp, endTimestamp, finalDistance, timeElapsed);
 
             document.querySelector('.total-distance').textContent = `${totalDistance.toFixed(2)} meters`;
 
