@@ -59,7 +59,33 @@ const checkGpsAccuracy = () => {
         return;
     }
 
+    // 🕒 Safety timeout – stop waiting if GPS signal takes too long
+    const gpsTimeout = setTimeout(() => {
+        display.innerHTML = `
+        <div class="flex flex-col items-center justify-center text-center p-6 bg-yellow-50 border border-yellow-400 rounded-xl shadow-sm">
+            <div class="text-6xl mb-2 animate-bounce">📡</div>
+            <h2 class="text-xl font-bold text-gray-800">Weak GPS Signal</h2>
+            <p class="text-gray-600 mt-1 text-sm mb-4">
+            Unable to get your location. Try moving outdoors or turning on precise location.
+            </p>
+            <button 
+            id="retry-btn" 
+            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition"
+            >
+            🔄 Try Again
+            </button>
+        </div>
+        `;
+
+        // Re-run GPS check when user clicks retry
+        document.getElementById("retry-btn").addEventListener("click", checkGpsAccuracy);
+    }, 15000); // wait 15 seconds
+
+
+    // 📍 Try to get the user’s current location once
     navigator.geolocation.getCurrentPosition((position) => {
+        clearTimeout(gpsTimeout); // ✅ stop the timeout if we get a response
+
         const accuracy = position.coords.accuracy;
         console.log("Initial GPS accuracy:", accuracy, "meters");
 
@@ -75,6 +101,9 @@ const checkGpsAccuracy = () => {
                 <p class="mt-2 text-xs text-gray-500">(Accuracy: ${accuracy.toFixed(1)} meters)</p>
             </div>
             `;
+
+            // Re-run GPS check when user clicks retry
+            document.getElementById("retry-btn").addEventListener("click", checkGpsAccuracy);
             return; // stop here — no tracking
         };
 
