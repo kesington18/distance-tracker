@@ -50,24 +50,75 @@ async function processData(lat, lon) {
     }
 }
 
-// the main function to start tracking
+const checkGpsAccuracy = () => {
+    // 🌀 Show loader while waiting for first GPS fix
+    showLoader();
 
+    if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition((position) => {
+        const accuracy = position.coords.accuracy;
+        console.log("Initial GPS accuracy:", accuracy, "meters");
+
+        if(accuracy > 50){
+            // Weak GPS signal — stop here and show warning
+        display.innerHTML = `  
+            <div class="flex flex-col items-center justify-center bg-yellow-50 border border-yellow-400 rounded-lg shadow-md p-6 text-center transition-all duration-500 ease-in-out">
+                <div class="text-5xl mb-3 animate-bounce">⚠️</div>
+                <h2 class="text-xl font-bold text-yellow-700 mb-2">Weak GPS Signal</h2>
+                <p class="text-gray-700 text-sm md:text-base">
+                Please move <span class="font-semibold">outside</span> to get a stronger GPS connection.
+                </p>
+                <p class="mt-2 text-xs text-gray-500">(Accuracy: ${accuracy.toFixed(1)} meters)</p>
+            </div>
+            `;
+            return; // stop here — no tracking
+        };
+
+        // ✅ Good GPS signal
+        display.innerHTML = `
+            <div class="flex flex-col items-center justify-center bg-green-50 border border-green-400 rounded-lg shadow-md p-6 text-center transition-all duration-500 ease-in-out">
+            <div class="relative flex items-center justify-center mb-3">
+                <div class="w-16 h-16 bg-green-400 rounded-full animate-ping opacity-60 absolute"></div>
+                <div class="text-4xl relative z-10">✅</div>
+            </div>
+            <h2 class="text-lg font-bold text-green-700 mb-2">GPS Signal Good</h2>
+            <p class="text-gray-700">Starting tracking...</p>
+            <p class="mt-2 text-xs text-gray-500">(Accuracy: ${accuracy.toFixed(1)} m)</p>
+            </div>
+        `;
+
+        // Wait briefly before starting tracking
+        setTimeout(() => startTracking(), 800);
+    }, (error) => {
+        alert(`Error occurred. Error code: ${error.code}: ${error.message}`);
+    }, {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+    });
+};
+
+// the main function to start tracking
 const startTracking = () => {
     if(!navigator.geolocation){
         alert("Geolocation is not supported by your browser");
         return;
     }
-    // 🌀 Show loader while waiting for first GPS fix
-    showLoader();
+
 
     watchId = navigator.geolocation.watchPosition(
         async (position) => {
-
-
             // console.log(position)
-            const { latitude, longitude } = position.coords;
+            const { latitude, longitude, accuracy } = position.coords;
             const timestamp = position.timestamp;
             // console.log(latitude, longitude, timestamp)
+
+            if (accuracy > 50) return;
+
             const currentPosition = { latitude, longitude, timestamp };
 
             if (!startPosition){
@@ -105,7 +156,7 @@ const startTracking = () => {
             );
 
 
-            if(segmentDistance > 10){
+            if(segmentDistance > 25){
                 totalDistance += segmentDistance;
                 route.push(currentPosition); // add current position to route
             }
@@ -236,6 +287,7 @@ const stopTracking = async () => {
 
 };
 
+// calculate total time between start and end timestamps
 const calculateTotalTime = (startTime, endTime) => {
     const startTimestamp = new Date(startTime.timestamp);
     const endTimestamp = new Date(endTime.timestamp);
@@ -256,6 +308,8 @@ const calculateTotalTime = (startTime, endTime) => {
     return { hours, minutes, seconds, formattedTime };
 }
 
+
+// calculate average speed and pace
 const calculateSpeedAndPace = (startPosition, lastPosition, totalDistance) => {
 
     let formattedPace = "0:00 min/km";
@@ -288,9 +342,9 @@ const calculateSpeedAndPace = (startPosition, lastPosition, totalDistance) => {
 
     return { averageSpeed, formattedPace };
 
-}
+};
 
 // console.log(watchId)
 
-document.querySelector('.start-btn').addEventListener('click', startTracking);
+document.querySelector('.start-btn').addEventListener('click', checkGpsAccuracy);
 document.querySelector('.stop-btn').addEventListener('click', stopTracking);
