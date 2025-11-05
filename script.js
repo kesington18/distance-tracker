@@ -79,7 +79,7 @@ const checkGpsAccuracy = () => {
 
         // Re-run GPS check when user clicks retry
         document.getElementById("retry-btn").addEventListener("click", checkGpsAccuracy);
-    }, 15000); // wait 15 seconds
+    }, 20000); // wait 20 seconds
 
 
     // 📍 Try to get the user’s current location once
@@ -99,6 +99,12 @@ const checkGpsAccuracy = () => {
                 Please move <span class="font-semibold">outside</span> to get a stronger GPS connection.
                 </p>
                 <p class="mt-2 text-xs text-gray-500">(Accuracy: ${accuracy.toFixed(1)} meters)</p>
+                <button 
+                id="retry-btn" 
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition"
+                >
+                🔄 Try Again
+                </button>
             </div>
             `;
 
@@ -127,11 +133,17 @@ const checkGpsAccuracy = () => {
 
         // Wait briefly before starting tracking
         setTimeout(() => startTracking(), 800);
-    }, {
+    },
+    (error) => {
+        clearTimeout(gpsTimeout);
+        console.log(`${error.code} : ${error.message}`)
+    },
+    {
         enableHighAccuracy: true,
         timeout: 15000,
         maximumAge: 0
-    });
+    }
+    );
 };
 
 // the main function to start tracking
