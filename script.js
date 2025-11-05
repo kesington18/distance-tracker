@@ -259,6 +259,7 @@ const calculateTotalTime = (startTime, endTime) => {
 const calculateSpeedAndPace = (startPosition, lastPosition, totalDistance) => {
 
     let formattedPace = "0:00 min/km";
+    let averageSpeed = 0;
 
     // checking if the distance is zero to avoid division by zero error
     if (totalDistance !== 0) {
@@ -268,7 +269,7 @@ const calculateSpeedAndPace = (startPosition, lastPosition, totalDistance) => {
         const totalKm = totalDistance / 1000;
     
         // 🧠 Average speed (km/h)
-        const averageSpeed = (totalDistance / totalSeconds) * 3.6;
+        averageSpeed = (totalDistance / totalSeconds) * 3.6;
     
         // 🧠 Pace (min/km)
         const pace = totalMinutes / totalKm;
