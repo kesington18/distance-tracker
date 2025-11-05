@@ -127,8 +127,6 @@ const checkGpsAccuracy = () => {
 
         // Wait briefly before starting tracking
         setTimeout(() => startTracking(), 800);
-    }, (error) => {
-        alert(`Error occurred. Error code: ${error.code}: ${error.message}`);
     }, {
         enableHighAccuracy: true,
         timeout: 15000,
