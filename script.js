@@ -120,6 +120,8 @@ const startTracking = () => {
             if (error.code === error.PERMISSION_DENIED) {
                 alert("Geolocation request failed. please reset location permission to grant access and reload")
             }
+
+            alert(`Error occurred. Error code: ${error.code}: ${error.message}`);
         },
         {
             enableHighAccuracy: true,
