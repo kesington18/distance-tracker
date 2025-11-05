@@ -91,6 +91,11 @@ const checkGpsAccuracy = () => {
             </div>
         `;
 
+        // feedback ping for mobile devices
+        if (navigator.vibrate) {
+            navigator.vibrate(500);
+        }
+
         // Wait briefly before starting tracking
         setTimeout(() => startTracking(), 800);
     }, (error) => {
