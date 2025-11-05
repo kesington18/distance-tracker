@@ -152,7 +152,9 @@ const stopTracking = async () => {
 
             const totalTime = calculateTotalTime(startPosition, lastPosition);
 
-            console.log(totalTime, finalDistance, totalDistance);
+            const { averageSpeed, formattedPace} = calculateSpeedAndPace(startPosition, lastPosition, totalDistance);
+
+            console.log(totalTime, finalDistance, totalDistance, averageSpeed, formattedPace);
 
             document.querySelector('.total-distance').textContent = `${totalDistance.toFixed(2)} meters`;
 
@@ -166,6 +168,16 @@ const stopTracking = async () => {
                     <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
                         <h2>Time elapsed</h2>
                         <p class=" text-lg font-mono">${totalTime.formattedTime}</p>
+                    </div>
+
+                    <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
+                        <h2>Average Speed</h2>
+                        <p>${averageSpeed.toFixed(2)} km/h</p>
+                    </div>
+
+                    <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
+                        <h2>Average Pace</h2>
+                        <p>${formattedPace}</p>
                     </div>
 
                     <div class="distance-location flex justify-between items-center border-purple-500 border-2 p-2">
@@ -240,6 +252,39 @@ const calculateTotalTime = (startTime, endTime) => {
     const formattedTime = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
 
     return { hours, minutes, seconds, formattedTime };
+}
+
+const calculateSpeedAndPace = (startPosition, lastPosition, totalDistance) => {
+
+    let formattedPace = "0:00 min/km";
+
+    // checking if the distance is zero to avoid division by zero error
+    if (totalDistance !== 0) {
+        // To be implemented
+        const totalSeconds = (lastPosition.timestamp - startPosition.timestamp) / 1000;
+        const totalMinutes = totalSeconds / 60;
+        const totalKm = totalDistance / 1000;
+    
+        // 🧠 Average speed (km/h)
+        const averageSpeed = (totalDistance / totalSeconds) * 3.6;
+    
+        // 🧠 Pace (min/km)
+        const pace = totalMinutes / totalKm;
+    
+        // Convert to minutes and seconds for display
+        const paceMinutes = Math.floor(pace);
+        const paceSeconds = Math.floor((pace - paceMinutes) * 60);
+    
+        // Format pace as mm:ss
+        formattedPace = `${paceMinutes}:${String(paceSeconds).padStart(2, '0')} min/km`;
+        
+    } else {
+        formattedPace = "-min/km"
+    }
+    
+
+    return { averageSpeed, formattedPace };
+
 }
 
 // console.log(watchId)
