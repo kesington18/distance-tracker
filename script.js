@@ -91,21 +91,21 @@ const checkGpsAccuracy = () => {
 
         if(accuracy > 50){
             // Weak GPS signal — stop here and show warning
-        display.innerHTML = `  
-            <div class="flex flex-col items-center justify-center bg-yellow-50 border border-yellow-400 rounded-lg shadow-md p-6 text-center transition-all duration-500 ease-in-out">
-                <div class="text-5xl mb-3 animate-bounce">⚠️</div>
-                <h2 class="text-xl font-bold text-yellow-700 mb-2">Weak GPS Signal</h2>
-                <p class="text-gray-700 text-sm md:text-base">
-                Please move <span class="font-semibold">outside</span> to get a stronger GPS connection.
-                </p>
-                <p class="mt-2 text-xs text-gray-500">(Accuracy: ${accuracy.toFixed(1)} meters)</p>
-                <button 
-                id="retry-btn" 
-                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition"
-                >
-                🔄 Try Again
-                </button>
-            </div>
+            display.innerHTML = `  
+                <div class="flex flex-col items-center justify-center bg-yellow-50 border border-yellow-400 rounded-lg shadow-md p-6 text-center transition-all duration-500 ease-in-out">
+                    <div class="text-5xl mb-3 animate-bounce">⚠️</div>
+                    <h2 class="text-xl font-bold text-yellow-700 mb-2">Weak GPS Signal</h2>
+                    <p class="text-gray-700 text-sm md:text-base">
+                    Please move <span class="font-semibold">outside</span> to get a stronger GPS connection.
+                    </p>
+                    <p class="mt-2 text-xs text-gray-500">(Accuracy: ${accuracy.toFixed(1)} meters)</p>
+                    <button 
+                    id="retry-btn" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition"
+                    >
+                    🔄 Try Again
+                    </button>
+                </div>
             `;
 
             // Re-run GPS check when user clicks retry
@@ -173,8 +173,8 @@ const startTracking = () => {
                 // Fade out placeholder (if visible)
                 const placeholder = document.getElementById("placeholder");
                 if (placeholder) {
-                placeholder.classList.add("opacity-0");
-                setTimeout(() => placeholder.remove(), 700); // remove after fade completes
+                    placeholder.classList.add("opacity-0");
+                    setTimeout(() => placeholder.remove(), 700); // remove after fade completes
                 }
 
                 startName = await processData(startPosition.latitude, startPosition.longitude);
