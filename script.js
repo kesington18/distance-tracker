@@ -121,7 +121,7 @@ const checkGpsAccuracy = () => {
                 <div class="text-4xl relative z-10">✅</div>
             </div>
             <h2 class="text-lg font-bold text-green-700 mb-2">GPS Signal Good</h2>
-            <p class="text-gray-700 font-bold">Starting tracking...</p>
+            <p class="text-gray-700">Starting tracking...</p>
             <p class="mt-2 text-xs text-gray-500">(Accuracy: ${accuracy.toFixed(1)} m)</p>
             </div>
         `;
@@ -131,8 +131,8 @@ const checkGpsAccuracy = () => {
             navigator.vibrate(500);
         }
 
-        //starting tracking
-        startTracking();
+        // Wait briefly before starting tracking
+        setTimeout(() => startTracking(), 800);
     },
     (error) => {
         clearTimeout(gpsTimeout);
@@ -148,12 +148,6 @@ const checkGpsAccuracy = () => {
 
 // the main function to start tracking
 const startTracking = () => {
-    startPosition = null;
-    lastPosition = null;
-    totalDistance = 0; 
-    route = [];
-    startName =  "";
-
     if(!navigator.geolocation){
         alert("Geolocation is not supported by your browser");
         return;
@@ -300,6 +294,12 @@ const stopTracking = async () => {
                     </div>
                 </div>
             `;
+
+            // Smooth fade-in effect for the new content
+            setTimeout(() => {
+                document.querySelector(".summary-card").classList.replace("opacity-0", "opacity-100");
+            }, 100);
+
         } else {
             display.innerHTML = `
                 <div
@@ -361,6 +361,7 @@ const calculateSpeedAndPace = (startPosition, lastPosition, totalDistance) => {
 
     // checking if the distance is zero to avoid division by zero error
     if (totalDistance !== 0) {
+        
         // To be implemented
         const totalSeconds = (lastPosition.timestamp - startPosition.timestamp) / 1000;
         const totalMinutes = totalSeconds / 60;
