@@ -1,4 +1,5 @@
 const API_KEY = "3da5b07faee1bcb1ec9587454037859f";
+const display = document.getElementById("location-display");
 
 let totalDistance = 0;
 
@@ -55,7 +56,7 @@ const checkGpsAccuracy = () => {
         navigator.vibrate(500);
 
         const userData = processData( latitude, longitude );
-        alert(userData[0])
+        display.innerHTML = `<div>${userData}</div>`;
     }, (error) => {
         // throw new Error(`Error Code = ${error.code} - ${error.message}`);
         alert(`Error Code = ${error.code} - ${error.message}`);
