@@ -1,3 +1,5 @@
+const API_KEY = "3da5b07faee1bcb1ec9587454037859f";
+
 let totalDistance = 0;
 
 const lastPosition =  { lat: 6.605874, lon: 3.349149 }; 
