@@ -56,7 +56,7 @@ const checkGpsAccuracy = () => {
         navigator.vibrate(500);
 
         const userData = await processData( latitude, longitude );
-        display.innerHTML = `<div>${userData}</div>`;
+        display.innerHTML = `<div>${userData[0].name}</div>`;
     }, (error) => {
         // throw new Error(`Error Code = ${error.code} - ${error.message}`);
         alert(`Error Code = ${error.code} - ${error.message}`);
