@@ -53,7 +53,7 @@ const checkGpsAccuracy = () => {
         navigator.vibrate(500);
 
         const userData = processData( latitude, longitude );
-        console.log(userData)
+        alert(userData[0])
     }, (error) => {
         // throw new Error(`Error Code = ${error.code} - ${error.message}`);
         alert(`Error Code = ${error.code} - ${error.message}`);
@@ -64,7 +64,11 @@ const checkGpsAccuracy = () => {
     })
 }
 
-
+const startTracking = () => {
+    if (!navigator.geolocation) {
+        
+    }
+}
 
 
 const segmentDistance= getDistanceInMeters( lastPosition.lat, lastPosition.lon, currentPosition.lat, currentPosition.lon );
