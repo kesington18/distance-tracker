@@ -43,7 +43,7 @@ const checkGpsAccuracy = () => {
         return;
     }
 
-    navigator.geolocation.getCurrentPosition((position) => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
         const { latitude, longitude, accuracy }  = position.coords;
         const timestamp  = position.timestamp;
         console.log(latitude, longitude, accuracy, timestamp);
@@ -55,7 +55,7 @@ const checkGpsAccuracy = () => {
 
         navigator.vibrate(500);
 
-        const userData = processData( latitude, longitude );
+        const userData = await processData( latitude, longitude );
         display.innerHTML = `<div>${userData}</div>`;
     }, (error) => {
         // throw new Error(`Error Code = ${error.code} - ${error.message}`);
