@@ -208,7 +208,7 @@ const startTracking = () => {
 
             lastPosition = currentPosition;
 
-            document.querySelector('.total-distance').textContent = `${totalDistance.toFixed(2)} meters`;
+            document.querySelector('.total-distance').textContent = `${(totalDistance / 1000).toFixed(2)} kilometers`;
         },
         (error) => {
             // console.log(error)
@@ -253,7 +253,7 @@ const stopTracking = async () => {
 
             console.log(totalTime, finalDistance, totalDistance, averageSpeed, formattedPace);
 
-            document.querySelector('.total-distance').textContent = `${totalDistance.toFixed(2)} meters`;
+            document.querySelector('.total-distance').textContent = `${(totalDistance / 1000).toFixed(2)} kilometers`;
 
             display.innerHTML += `
                 <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2  opacity-0 transition-opacity duration-700 ease-in-out summary-card">
@@ -361,7 +361,7 @@ const calculateSpeedAndPace = (startPosition, lastPosition, totalDistance) => {
 
     // checking if the distance is zero to avoid division by zero error
     if (totalDistance !== 0) {
-        
+
         // To be implemented
         const totalSeconds = (lastPosition.timestamp - startPosition.timestamp) / 1000;
         const totalMinutes = totalSeconds / 60;
