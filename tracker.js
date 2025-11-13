@@ -64,11 +64,19 @@ const checkGpsAccuracy = () => {
     })
 }
 
-const startTracking = () => {
-    if (!navigator.geolocation) {
-        
-    }
-}
+// const startTracking = () => {
+//     if (!navigator.geolocation) {
+//         console.log("Geolocation is not supported by your browser");
+//         return;
+//     }
+
+//     const watchId = navigator.geolocation.watchPosition(() => {
+
+//     }, () => {
+
+//     })
+
+// }
 
 
 const segmentDistance= getDistanceInMeters( lastPosition.lat, lastPosition.lon, currentPosition.lat, currentPosition.lon );
