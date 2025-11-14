@@ -1,10 +1,16 @@
 const API_KEY = "3da5b07faee1bcb1ec9587454037859f";
 const display = document.getElementById("location-display");
 
+let watchId = null;
+let startPosition = null;
+let lastPosition = null;
 let totalDistance = 0;
+let route = [];
+let startName = "";
+let endName = "";
 
-const lastPosition =  { lat: 6.605874, lon: 3.349149 }; 
-const currentPosition = { lat: 6.50837, lon: 3.384247 }; 
+// const lastPosition =  { lat: 6.605874, lon: 3.349149 }; 
+// const currentPosition = { lat: 6.50837, lon: 3.384247 }; 
 
 function getDistanceInMeters(lat1, lon1, lat2, lon2) {
   const toRad = deg => deg * Math.PI / 180;
@@ -43,7 +49,7 @@ const checkGpsAccuracy = () => {
         return;
     }
 
-    navigator.geolocation.getCurrentPosition(async (position) => {
+    navigator.geolocation.getCurrentPosition( (position) => {
         const { latitude, longitude, accuracy }  = position.coords;
         const timestamp  = position.timestamp;
         console.log(latitude, longitude, accuracy, timestamp);
@@ -55,8 +61,9 @@ const checkGpsAccuracy = () => {
 
         navigator.vibrate(500);
 
-        const userData = await processData( latitude, longitude );
-        display.innerHTML = `<div>${userData[0].name}</div>`;
+        startTracking();
+        // const userData = processData( latitude, longitude );
+        // display.innerHTML = `<div>${userData[0].name}</div>`;
     }, (error) => {
         // throw new Error(`Error Code = ${error.code} - ${error.message}`);
         alert(`Error Code = ${error.code} - ${error.message}`);
@@ -67,24 +74,74 @@ const checkGpsAccuracy = () => {
     })
 }
 
-// const startTracking = () => {
-//     if (!navigator.geolocation) {
-//         console.log("Geolocation is not supported by your browser");
-//         return;
-//     }
+const startTracking = () => {
+    if (!navigator.geolocation) {
+        console.log("Geolocation is not supported by your browser");
+        return;
+    }
 
-//     const watchId = navigator.geolocation.watchPosition(() => {
+    watchId = navigator.geolocation.watchPosition( async (position) => {
+        const {latitude, longitude} = position.coords;
+        const timestamp = position.timestamp;
 
-//     }, () => {
+        let currentPosition = {latitude, longitude, timestamp};
 
-//     })
+        if (!startPosition) {
+            startPosition = currentPosition;
+            lastPosition = currentPosition;
+            route.push(currentPosition);
 
-// }
+            startName = await processData( startPosition.latitude, startPosition.longitude );
 
+            display.innerHTML = `<div class="bg-indigo-400 text-white p-2 w-full">Tracking started at: ${startName[0].name}, ${startName[0].country}</div>`;
 
-const segmentDistance= getDistanceInMeters( lastPosition.lat, lastPosition.lon, currentPosition.lat, currentPosition.lon );
-    
-totalDistance += segmentDistance;
+            return;
+        }
+
+        const segmentDistance = getDistanceInMeters( lastPosition.latitude, lastPosition.longitude, currentPosition.latitude, currentPosition.longitude );
+
+        if( segmentDistance > 25 ) {
+            totalDistance += segmentDistance;
+            route.push(currentPosition);
+        }
+
+        lastPosition = currentPosition;
+
+    }, (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+            alert("Geolocation request failed. please reset location permission to grant access and reload")
+        }
+
+        alert(`Error Code = ${error.code} - ${error.message}`);
+    }, {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+    })
+
+}
+
+const stopTracking = async () => {
+    if( watchId !== null ) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+    }
+
+    display.innerHTML = "";
+
+    try {
+        if (startPosition && lastPosition) {
+            const staightDistance = getDistanceInMeters( startPosition.latitude, startPosition.longitude, lastPosition.latitude, lastPosition.longitude );
+
+            endName = await processData( lastPosition.latitude, lastPosition.longitude );
+
+            display.innerHTML += `<div class="bg-green-400 text-white p-2 w-full mt-2">Tracking stopped at: ${endName[0].name}, ${endName[0].country}</div>`;
+        }
+    } catch (error) {
+        
+    }
+}
+
 // console.log(segmentDistance)
 
 document.querySelector(".start-btn").addEventListener("click", checkGpsAccuracy );
