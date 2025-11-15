@@ -121,6 +121,31 @@ const startTracking = () => {
 
 }
 
+const getTotalTime = (startTime, endTime) => {
+    const startTimeStamp = new Date(startTime);
+    const endTimestamp = new Date(endTime);
+
+    const diffInTime = endTimestamp.getTime() - startTimeStamp.getTime();
+    const totalSeconds = Math.floor(diffInTime / 1000);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const totalHours = Math.floor(totalMinutes / 60);
+
+    const formattedTime = `${String(totalHours).padStart(2, '0')}:${String(totalMinutes % 60).padStart(2, '0')}:${String(totalSeconds % 60).padStart(2, '0')}`;
+
+    return { formattedTime, totalMinutes };
+}
+
+const getPace = ( totalDistanceInKilometers, totalMinutes ) => {
+    const paceInMinutesPerKilometer = totalMinutes / totalDistanceInKilometers;
+
+    const minutes = Math.floor(paceInMinutesPerKilometer);
+    const seconds = Math.floor((paceInMinutesPerKilometer - minutes) * 60);
+
+    const formattedPace = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} min/km`;
+
+    return formattedPace;
+}
+
 const stopTracking = async () => {
     if( watchId !== null ) {
         navigator.geolocation.clearWatch(watchId);
@@ -133,9 +158,51 @@ const stopTracking = async () => {
         if (startPosition && lastPosition) {
             const staightDistance = getDistanceInMeters( startPosition.latitude, startPosition.longitude, lastPosition.latitude, lastPosition.longitude );
 
+            const getDate = new Date(startPosition.timestamp);
+
+
             endName = await processData( lastPosition.latitude, lastPosition.longitude );
 
-            display.innerHTML += `<div class="bg-green-400 text-white p-2 w-full mt-2">Tracking stopped at: ${endName[0].name}, ${endName[0].country}</div>`;
+            const { formattedTime, totalMinutes } = getTotalTime( startPosition.timestamp, lastPosition.timestamp );
+
+            const formattedPace = getPace( (totalDistance / 1000), totalMinutes );
+
+            display.innerHTML += `
+                <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2">
+                    <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
+                        <h2>Start To End</h2>
+                        <p>${(staightDistance / 1000).toFixed(2)} kilometers</p>
+                    </div>
+
+                    <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
+                        <h2>Time elapsed</h2>
+                        <p class=" text-lg font-mono">${formattedTime}</p>
+                    </div>
+
+                    <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
+                        <h2>Average Pace</h2>
+                        <p>${formattedPace}</p>
+                    </div>
+
+                    <div class="distance-location flex justify-between items-center border-purple-500 border-2 p-2">
+                        <div>
+                            <h2>${startName[0].name}</h2>
+                            <br>
+                            <h2>${getDate.toLocaleString()}</h2>
+                        </div>
+
+                        <span> --> </span>
+                        
+                        <div>
+                            <h2>${endPositionName[0].name}</h2>
+                            <br>
+                            <h2>${getLastDate.toLocaleString()}</h2>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+
         }
     } catch (error) {
         
