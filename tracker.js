@@ -136,12 +136,18 @@ const getTotalTime = (startTime, endTime) => {
 }
 
 const getPace = ( totalDistanceInKilometers, totalMinutes ) => {
-    const paceInMinutesPerKilometer = totalMinutes / totalDistanceInKilometers;
+    let formattedPace = "0:00 min/km";
 
-    const minutes = Math.floor(paceInMinutesPerKilometer);
-    const seconds = Math.floor((paceInMinutesPerKilometer - minutes) * 60);
+    if (totalDistanceInKilometers !== 0) {
+        const paceInMinutesPerKilometer = totalMinutes / totalDistanceInKilometers;
 
-    const formattedPace = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} min/km`;
+        const minutes = Math.floor(paceInMinutesPerKilometer);
+        const seconds = Math.floor((paceInMinutesPerKilometer - minutes) * 60);
+
+        formattedPace = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} min/km`;
+    } else{
+        formattedPace = "-min/km";
+    }
 
     return formattedPace;
 }
@@ -196,6 +202,7 @@ const stopTracking = async () => {
                 </div>
             `;
         }
+        
     } catch (error) {
         alert(error)
     }
@@ -203,4 +210,6 @@ const stopTracking = async () => {
 
 // console.log(segmentDistance)
 
+// dom eventlisteners for start button and stop button
 document.querySelector(".start-btn").addEventListener("click", checkGpsAccuracy );
+document.querySelector(".stop-btn").addEventListener("click", stopTracking );
