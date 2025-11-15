@@ -184,28 +184,20 @@ const stopTracking = async () => {
                         <p>${formattedPace}</p>
                     </div>
 
-                    <div class="distance-location flex justify-between items-center border-purple-500 border-2 p-2">
-                        <div>
+                    <div class="distance-location flex flex-col items-center border-purple-500 border-2 p-2">
+                        <div class="locations flex justify-between items-center">
                             <h2>${startName[0].name}</h2>
-                            <br>
-                            <h2>${getDate.toLocaleString()}</h2>
+                            <span> --> </span>
+                            <h2>${endPositionName[0].name}</h2>
                         </div>
 
-                        <span> --> </span>
-                        
-                        <div>
-                            <h2>${endPositionName[0].name}</h2>
-                            <br>
-                            <h2>${getLastDate.toLocaleString()}</h2>
-                        </div>
+                        <h2 class="text-desc p-2 w-full ">${getDate.toLocaleString()}</h2>
                     </div>
                 </div>
             `;
-
-
         }
     } catch (error) {
-        
+        alert(error)
     }
 }
 
