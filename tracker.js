@@ -94,7 +94,7 @@ const startTracking = () => {
 
             startName = await processData( startPosition.latitude, startPosition.longitude );
 
-            placeHolder.classList.toggle("hidden")
+            placeHolder.classList.add("hidden")
 
             display.innerHTML = `<div class="bg-indigo-400 text-white p-2 w-full">Tracking started at: ${startName[0].name}, ${startName[0].country}</div>`;
 
@@ -177,7 +177,7 @@ const stopTracking = async () => {
             const formattedPace = getPace( (totalDistance / 1000), totalMinutes );
 
 
-            placeHolder.classList.toggle("hidden");
+            placeHolder.classList.add("hidden");
 
             display.innerHTML += `
                 <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2">
