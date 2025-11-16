@@ -1,5 +1,6 @@
 const API_KEY = "3da5b07faee1bcb1ec9587454037859f";
 const display = document.getElementById("location-display");
+const placeHolder = document.getElementById("placeholder");
 
 let watchId = null;
 let startPosition = null;
@@ -93,6 +94,8 @@ const startTracking = () => {
 
             startName = await processData( startPosition.latitude, startPosition.longitude );
 
+            placeHolder.classList.toggle("hidden")
+
             display.innerHTML = `<div class="bg-indigo-400 text-white p-2 w-full">Tracking started at: ${startName[0].name}, ${startName[0].country}</div>`;
 
             return;
@@ -173,6 +176,9 @@ const stopTracking = async () => {
 
             const formattedPace = getPace( (totalDistance / 1000), totalMinutes );
 
+
+            placeHolder.classList.toggle("hidden");
+
             display.innerHTML += `
                 <div class="desc grid grid-cols-1 border-green-500 border-2 w-full mb-2">
                     <div class="text-desc flex justify-between items-center border-teal-500 border-2 p-2">
@@ -201,7 +207,16 @@ const stopTracking = async () => {
                     </div>
                 </div>
             `;
+        } else {
+            placeHolder.classList.remove("hidden");
+            return;
         }
+
+        startPosition = null;
+        lastPosition = null;
+        totalDistance = 0;
+        route = [];
+        startName = "";
 
     } catch (error) {
         alert(error)
