@@ -194,7 +194,7 @@ const stopTracking = async () => {
                         <div class="locations flex justify-between items-center">
                             <h2>${startName[0].name}</h2>
                             <span> --> </span>
-                            <h2>${endPositionName[0].name}</h2>
+                            <h2>${endName[0].name}</h2>
                         </div>
 
                         <h2 class="text-desc p-2 w-full ">${getDate.toLocaleString()}</h2>
@@ -202,7 +202,7 @@ const stopTracking = async () => {
                 </div>
             `;
         }
-        
+
     } catch (error) {
         alert(error)
     }
